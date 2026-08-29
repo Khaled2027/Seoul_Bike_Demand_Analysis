@@ -14,3 +14,4 @@ df <- read_csv("SeoulBikeData.csv",
                locale= locale(encoding = "Windows-1252"))
 head(df)
 View(df)
+str(df)
