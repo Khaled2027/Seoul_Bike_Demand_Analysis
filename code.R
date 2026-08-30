@@ -13,8 +13,9 @@ list.files()
 
 df <- read_csv("SeoulBikeData.csv",
                locale= locale(encoding = "Windows-1252"))
-sum(is.na(df))
 
 head(df)
 View(df)
 str(df)
+
+sum(is.na(df))
