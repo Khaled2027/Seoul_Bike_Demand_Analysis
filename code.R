@@ -12,9 +12,12 @@ library(ggplot2)
 
 df <- read_csv("SeoulBikeData.csv",
                locale= locale(encoding = "Windows-1252"))
+dim(df)
+names(df)
 
 head(df)
 View(df)
+
 str(df)
 # Returns the number of null values
 sum(is.na(df))
