@@ -24,8 +24,9 @@ sum(is.na(df))
 # Returns the number of duplicate rows
 sum(duplicated(df))
 
+# Returns the total number of values preset in the 'Functioning Day' column
 length_of_functioning_day <- length(df$`Functioning Day`)
-
+# Returns the percentages of each unique value from 'Functioning Day'
 percentage <- (table(df$`Functioning Day`)/length_of_functioning_day)*100
 # Rounds to 2 decimal places
 percentage <- round(percentage,2)
@@ -36,7 +37,7 @@ df_groupby_functioning_day <- df %>%
   filter(`Functioning Day`=='No')
 df_groupby_functioning_day
 
-# keeps rows where`Functioning Day' column is equal to 'Yes'
+# Keeps rows where`Functioning Day' column is equal to 'Yes'
 df <- df %>%
   filter(`Functioning Day`=='Yes')
 
@@ -49,7 +50,7 @@ df <-df %>%
 df_groupby_season <- df %>%
   group_by(Seasons) %>%
   summarise(avgDemand=sum(`Rented Bike Count`)/length(Date))
-df_groupby_sesson
+df_groupby_season
 
 # Displays a histogram based on 'Rented Bike Count' column
 hist(df$`Rented Bike Count`,main=paste("Histogram of",
