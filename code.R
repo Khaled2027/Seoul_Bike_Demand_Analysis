@@ -23,9 +23,10 @@ str(df)
 sum(is.na(df))
 # Returns the number of duplicate rows
 sum(duplicated(df))
-# Returns a dataframe with all columns except for `Dew point temperature(°C)` column
+# Drops the `Dew point temperature(°C)` column and `Functioning Day` column 
+# from the dataframe
 df <- df %>%
-  select(!(`Dew point temperature(°C)`))
+  select(!c(`Dew point temperature(°C)`,`Functioning Day`))
 
 
 # Returns the total number of values preset in the 'Functioning Day' column
@@ -44,10 +45,6 @@ df_groupby_functioning_day
 # Keeps rows where`Functioning Day' column is equal to 'Yes'
 df <- df %>%
   filter(`Functioning Day`=='Yes')
-# Returns a dataframe with all columns except for `Functioning Day` column
-df <- df %>%
-  select(!(`Functioning Day`))
-
 
 # Converts the datatype of 'Rented Bike Count' column into numeric type
 df <-df %>%
