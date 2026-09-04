@@ -2,14 +2,16 @@ getwd()
 
 install.packages("tidyverse")
 install.packages("psych")
+install.packages("corrplot")
 
 library(readr)
 library(lubridate)
 library(psych)
 library(dplyr)
+library(corrplot)
 library(ggplot2)
 
-
+#--------------Data loading & Exploration--------------
 df <- read_csv("SeoulBikeData.csv",
                locale= locale(encoding = "Windows-1252"))
 dim(df)
@@ -36,6 +38,7 @@ df_groupby_functioning_day <- df %>%
   select(`Rented Bike Count`,`Functioning Day`) %>%
   filter(`Functioning Day`=='No')
 df_groupby_functioning_day
+# -------------Data Preprocessing -------------
 
 # Keeps rows where`Functioning Day' column is equal to 'Yes'
 df <- df %>%
@@ -44,7 +47,6 @@ df <- df %>%
 # from the dataframe
 df <- df %>%
   select(!c(`Dew point temperature(°C)`,`Functioning Day`))
-df
 # Returns a Satistical summary 
 describe(df)
 
@@ -74,17 +76,41 @@ df$is_summer <- ifelse(df$Seasons=='Summer',1,0)
 # Converts the datatype of 'Rented Bike Count' column into numeric type
 df <-df %>%
   mutate(`Rented Bike Count` = as.numeric(`Rented Bike Count`))
+# Drops the Date, Holiday, and dayofweek columns 
+df <- df %>%
+  select(!c(Date,Holiday,dayofweek))
+
+df_numerical_columns <- df %>%
+  select(!c(Seasons))
+# Returns a Satistical summary 
+describe(df_numerical_columns)
+
+df_columns_for_corr <- cor(df_numerical_columns)
 
 # Returns a dataframe with Seasons grouped and 
 # aggregated by the mean bike demand per season
 df_groupby_season <- df %>%
   group_by(Seasons) %>%
-  summarise(avgDemand=sum(`Rented Bike Count`)/length(Date))
-df_groupby_season
+  summarise(avgSeasonDemand=round(sum(`Rented Bike Count`)/length(Date)))
+
+avg_Demand<- df %>%
+  summarise(avgDemand=round(sum(`Rented Bike Count`)/length(Date)))
+
+# --------------EDA --------------
 
 # Displays a histogram based on 'Rented Bike Count' column
 hist(df$`Rented Bike Count`,main=paste("Histogram of",
-      "Rented Bike Count"),xlab='Number of rented bikes',col="lightblue") 
+      "Rented Bike Count"),xlab='Number of rented bikes',col="lightblue")
 
+# Displays a correlation matrix 
+corrplot(df_columns_for_corr)
+#-------------- Data Viz for business stakeholders --------------
+avg_Demand=unlist(avg_Demand)
+# Displays a bar chart for the Average dail bike demand per Season
+ggplot(df_groupby_season,aes(x=Seasons,y= avgSeasonDemand,fill = Seasons)) +
+  geom_col() + 
+  labs(x = "Seasons", y = "Average daily bike demand") +
+  geom_hline(yintercept = avg_Demand,linetype = "dashed") +
+  geom_text(aes(label = avgSeasonDemand),vjust=-0.5, colour = "black")
 
 
