@@ -72,6 +72,8 @@ df$is_winter <- ifelse(df$Seasons=='Winter',1,0)
 df$is_spring <- ifelse(df$Seasons=='Spring',1,0)
 df$is_summer <- ifelse(df$Seasons=='Summer',1,0)
 
+# f
+df$is_snowfall <-ifelse(df$`Snowfall (cm)`==0,"No snowfall","Snowfall")
 
 # Converts the datatype of 'Rented Bike Count' column into numeric type
 df <-df %>%
@@ -93,8 +95,18 @@ df_groupby_season <- df %>%
   group_by(Seasons) %>%
   summarise(avgSeasonDemand=round(sum(`Rented Bike Count`)/length(Date)))
 
+# Returns the overall average bike demand 
 avg_Demand<- df %>%
   summarise(avgDemand=round(sum(`Rented Bike Count`)/length(Date)))
+
+df_grouped_by_season_and_hour <- df %>%
+  summarise(avgHourDemand=round(mean(`Rented Bike Count`))
+            ,.by=c(Seasons,Hour))
+
+df_grouped_by_season_and_temp <- df %>%
+  summarise(avgDemand=round(mean(`Rented Bike Count`))
+            ,.by=c(Seasons,`Temperature(°C)`))
+
 
 # --------------EDA --------------
 
@@ -106,11 +118,38 @@ hist(df$`Rented Bike Count`,main=paste("Histogram of",
 corrplot(df_columns_for_corr)
 #-------------- Data Viz for business stakeholders --------------
 avg_Demand=unlist(avg_Demand)
-# Displays a bar chart for the Average dail bike demand per Season
-ggplot(df_groupby_season,aes(x=Seasons,y= avgSeasonDemand,fill = Seasons)) +
+
+# Displays a bar chart for the Average daily bike demand per Season
+ggplot(df_groupby_season,aes(x=Seasons,y= avgSeasonDemand
+                             ,fill = Seasons)) +
   geom_col() + 
-  labs(x = "Seasons", y = "Average daily bike demand") +
+  labs(x = "Seasons", y = "Average demand") +
   geom_hline(yintercept = avg_Demand,linetype = "dashed") +
-  geom_text(aes(label = avgSeasonDemand),vjust=-0.5, colour = "black")
+  geom_text(aes(label = avgSeasonDemand),vjust=-0.4, colour = "black")+
+  ggtitle("Average Daily Bike Demand across Mulitple Seasons")
 
+# Displays a linechart where x is the hour and y is the average demand per hour, colored by a line represting the Seasons
+ggplot(df_grouped_by_season_and_hour,aes(x=Hour,y=avgHourDemand
+                                         ,color=Seasons)) +
+  geom_line() +
+  expand_limits(y=0) +
+  labs(x = "Hour of the day", y = "Average demand") +
+  ggtitle("Average Hourly Bike Demand across Mulitple Seasons")
 
+# Displays a scatterplot where x is tempertaure and y is the average bike demand
+ggplot(df_grouped_by_season_and_temp,
+       aes(x=`Temperature(°C)`,y=avgDemand,color=Seasons)) +
+  geom_point() +
+  labs(x = "Temperature", y = "Average demand") +
+  ggtitle("Temperture vs Average Demand (across seasons)") 
+  
+  
+# Displays a boxplot that consists of 2 plots 
+ggplot(df,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  labs(x = "Snowfall or No Snowfall", y = "Average demand") +
+  ggtitle("Comparing the demand when it is snowing vs when there is no snow")
+
+#--------------Hypothesis Testing --------------
+  
