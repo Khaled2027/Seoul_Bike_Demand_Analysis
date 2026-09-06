@@ -47,8 +47,6 @@ df <- df %>%
 # from the dataframe
 df <- df %>%
   select(!c(`Dew point temperature(°C)`,`Functioning Day`))
-# Returns a Satistical summary 
-describe(df)
 
 # Switches the column data format into data format
 df <-df %>%
@@ -72,7 +70,7 @@ df$is_winter <- ifelse(df$Seasons=='Winter',1,0)
 df$is_spring <- ifelse(df$Seasons=='Spring',1,0)
 df$is_summer <- ifelse(df$Seasons=='Summer',1,0)
 
-# f
+
 df$is_snowfall <-ifelse(df$`Snowfall (cm)`==0,"No snowfall","Snowfall")
 
 # Converts the datatype of 'Rented Bike Count' column into numeric type
@@ -83,7 +81,7 @@ df <- df %>%
   select(!c(Date,Holiday,dayofweek))
 
 df_numerical_columns <- df %>%
-  select(!c(Seasons))
+  select(!c(Seasons,is_snowfall))
 # Returns a Satistical summary 
 describe(df_numerical_columns)
 
@@ -152,4 +150,9 @@ ggplot(df,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
   ggtitle("Comparing the demand when it is snowing vs when there is no snow")
 
 #--------------Hypothesis Testing --------------
+
+# Test 1: Anova
+df_aov <- aov(df$`Rented Bike Count`~ df$Seasons)
+summary(df_aov)
+
   
