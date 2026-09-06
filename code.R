@@ -124,6 +124,7 @@ ggplot(df_groupby_season,aes(x=Seasons,y= avgSeasonDemand
   labs(x = "Seasons", y = "Average demand") +
   geom_hline(yintercept = avg_Demand,linetype = "dashed") +
   geom_text(aes(label = avgSeasonDemand),vjust=-0.4, colour = "black")+
+  theme_minimal() +
   ggtitle("Average Daily Bike Demand across Mulitple Seasons")
 
 # Displays a linechart where x is the hour and y is the average demand per hour, colored by a line represting the Seasons
@@ -131,6 +132,7 @@ ggplot(df_grouped_by_season_and_hour,aes(x=Hour,y=avgHourDemand
                                          ,color=Seasons)) +
   geom_line() +
   expand_limits(y=0) +
+  theme_minimal() +
   labs(x = "Hour of the day", y = "Average demand") +
   ggtitle("Average Hourly Bike Demand across Mulitple Seasons")
 
@@ -138,6 +140,7 @@ ggplot(df_grouped_by_season_and_hour,aes(x=Hour,y=avgHourDemand
 ggplot(df_grouped_by_season_and_temp,
        aes(x=`Temperature(°C)`,y=avgDemand,color=Seasons)) +
   geom_point() +
+  theme_minimal() +
   labs(x = "Temperature", y = "Average demand") +
   ggtitle("Temperture vs Average Demand (across seasons)") 
   
@@ -146,6 +149,7 @@ ggplot(df_grouped_by_season_and_temp,
 ggplot(df,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
   geom_boxplot() +
   scale_y_log10() +
+  theme_minimal() +
   labs(x = "Snowfall or No Snowfall", y = "Average demand") +
   ggtitle("Comparing the demand when it is snowing vs when there is no snow")
 
