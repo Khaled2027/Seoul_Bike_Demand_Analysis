@@ -159,4 +159,7 @@ ggplot(df,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
 df_aov <- aov(df$`Rented Bike Count`~ df$Seasons)
 summary(df_aov)
 
+# Tukey significant difference test
+TukeyHSD(df_aov)
+
   
