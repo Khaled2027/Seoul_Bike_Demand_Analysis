@@ -147,8 +147,9 @@ ggplot(df_grouped_by_season_and_temp,
   
 # Displays a boxplot that consists of 2 plots 
 ggplot(df,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
-  geom_boxplot() +
+  geom_boxplot(outlier.shape = NA) +
   scale_y_log10() +
+  #coord_flip() +
   theme_minimal() +
   labs(x = "Snowfall or No Snowfall", y = "Average demand") +
   ggtitle("Comparing the demand when it is snowing vs when there is no snow")
@@ -162,4 +163,6 @@ summary(df_aov)
 # Tukey significant difference test
 TukeyHSD(df_aov)
 
+# Test 2: T-test
+d <-t.test()
   
