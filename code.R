@@ -166,5 +166,8 @@ summary(df_aov)
 TukeyHSD(df_aov)
 
 # Test 2: T-test
-print(t.test(`Rented Bike Count`~is_snowfall,data=df))
+t.test(`Rented Bike Count`~is_snowfall,data=df)
+
+# Test 3: T-test for 'Holiday' vs 'No Holiday'
+t.test(`Rented Bike Count`~Holiday,data=df)
   
