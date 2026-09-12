@@ -105,6 +105,8 @@ df_grouped_by_season_and_temp <- df %>%
   summarise(avgDemand=round(mean(`Rented Bike Count`))
             ,.by=c(Seasons,`Temperature(°C)`))
 
+df_inWinter <-df %>%
+  filter(Seasons=='Winter')
 
 # --------------EDA --------------
 
@@ -146,7 +148,7 @@ ggplot(df_grouped_by_season_and_temp,
   
   
 # Displays a boxplot that consists of 2 plots 
-ggplot(df,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
+ggplot(df_inWinter,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
   geom_boxplot(outlier.shape = NA) +
   scale_y_log10() +
   #coord_flip() +
@@ -164,5 +166,5 @@ summary(df_aov)
 TukeyHSD(df_aov)
 
 # Test 2: T-test
-d <-t.test()
+print(t.test(`Rented Bike Count`~is_snowfall,data=df))
   
