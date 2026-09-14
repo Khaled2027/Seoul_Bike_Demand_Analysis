@@ -3,6 +3,7 @@ getwd()
 install.packages("tidyverse")
 install.packages("psych")
 install.packages("corrplot")
+install.packages("car")
 
 library(readr)
 library(lubridate)
@@ -10,6 +11,7 @@ library(psych)
 library(dplyr)
 library(corrplot)
 library(ggplot2)
+library(car)
 
 #--------------Data loading & Exploration--------------
 df <- read_csv("SeoulBikeData.csv",
@@ -48,7 +50,7 @@ df <- df %>%
 df <- df %>%
   select(!c(`Dew point temperature(°C)`,`Functioning Day`))
 
-# Switches the column data format into data format
+# Switches the column data format into date format
 df <-df %>%
   mutate(Date = as.Date(Date,format='%d/%m/%Y'))
 
@@ -58,8 +60,6 @@ df <-df %>%
 
 # Creates a new column called 'is_weekday' that contain two values: 1 (True) and 0 (False)
 df$is_weekday <- ifelse(df$dayofweek=='Fri'|df$dayofweek=='Mon'|df$dayofweek=='Tue'|df$dayofweek=='Wed'|df$dayofweek=='Thu',1,0)
-# Creates a new column called 'is_weekend' that contain two values: 1 (True) and 0 (False)
-df$is_weekend <- ifelse(df$dayofweek=='Sat'|df$dayofweek=='Sun',1,0)
 
 # Creates a new column called 'is_holiday' for encoding and it contains two values: 
 # 1 (True) and 0 (False)
@@ -78,10 +78,10 @@ df <-df %>%
   mutate(`Rented Bike Count` = as.numeric(`Rented Bike Count`))
 # Drops the Date, Holiday, and dayofweek columns 
 df <- df %>%
-  select(!c(Date,Holiday,dayofweek))
+  select(!c(Holiday,dayofweek))
 
 df_numerical_columns <- df %>%
-  select(!c(Seasons,is_snowfall))
+  select(!c(Seasons,is_snowfall,Date))
 # Returns a Satistical summary 
 describe(df_numerical_columns)
 
@@ -108,7 +108,7 @@ df_grouped_by_season_and_temp <- df %>%
 df_inWinter <-df %>%
   filter(Seasons=='Winter')
 
-# --------------EDA --------------
+# -------------- EDA --------------
 
 # Displays a histogram based on 'Rented Bike Count' column
 hist(df$`Rented Bike Count`,main=paste("Histogram of",
@@ -148,13 +148,15 @@ ggplot(df_grouped_by_season_and_temp,
   
   
 # Displays a boxplot that consists of 2 plots 
-ggplot(df_inWinter,aes(x=is_snowfall,y=`Rented Bike Count`,color=is_snowfall)) +
+ggplot(df_inWinter,aes(x=is_snowfall,y=`Rented Bike Count`,
+                       color=is_snowfall)) +
   geom_boxplot(outlier.shape = NA) +
   scale_y_log10() +
   #coord_flip() +
   theme_minimal() +
   labs(x = "Snowfall or No Snowfall", y = "Average demand") +
   ggtitle("Comparing the demand when it is snowing vs when there is no snow")
+
 
 #--------------Hypothesis Testing --------------
 
@@ -165,9 +167,40 @@ summary(df_aov)
 # Tukey significant difference test
 TukeyHSD(df_aov)
 
-# Test 2: T-test
+# Test 2: T-test for 'is_snowfall'
 t.test(`Rented Bike Count`~is_snowfall,data=df)
+# Test 3: T-test for 'is_holiday'
+t.test(`Rented Bike Count`~is_holiday,data=df)
 
-# Test 3: T-test for 'Holiday' vs 'No Holiday'
-t.test(`Rented Bike Count`~Holiday,data=df)
-  
+# Test 4: T-test for 'is_weekday'
+t.test(`Rented Bike Count`~is_weekday,data=df)
+
+#-------------- Modeling --------------
+
+df_linear_regression <- df %>%
+  select(!c(Date,Seasons,is_snowfall))
+# Multivariable linear Regression Model
+Linear_regresion_model <- lm(`Rented Bike Count`~.,df_linear_regression)
+
+# Returns the calculate Variance Inflation Factor
+vif(Linear_regresion_model)
+
+summary(Linear_regresion_model)
+
+par(mfrow = c(2,2))
+
+plot(Linear_regresion_model)
+
+# Create a dataframe with new values
+prediction_data <- data.frame(Hour=9,`Temperature(°C)`= 6.0,`Humidity(%)`=34,
+                       `Wind speed (m/s)`=3,`Visibility (10m)`=400,
+                       `Solar Radiation (MJ/m2)`=1.12,`Rainfall(mm)`=0,
+                       `Snowfall (cm)`=0,is_weekday=1,is_holiday=0,
+                       is_winter=1,is_spring=0,is_summer=0,
+                       check.names=FALSE)
+# Gets the predicted value
+Linear_Regression_prediction <- predict(Linear_regresion_model
+                                      ,prediction_data)
+# Displays the predicted value
+Linear_Regression_prediction
+
