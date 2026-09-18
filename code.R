@@ -41,6 +41,7 @@ df_groupby_functioning_day
 # Keeps rows where`Functioning Day' column is equal to 'Yes'
 df <- df %>%
   filter(`Functioning Day`=='Yes')
+# Displays the shape fo the dataframe after filtering
 dim(df)
 # Drops the `Dew point temperature(°C)` column and `Functioning Day` column 
 # from the dataframe
@@ -62,18 +63,16 @@ df$is_weekday <- ifelse(df$dayofweek=='Fri'|df$dayofweek=='Mon'|df$dayofweek=='T
 # 1 (True) and 0 (False)
 df$is_holiday <-ifelse(df$Holiday=='Holiday',1,0)
 
-# feuture engineers 3 new columns
 df$is_winter <- ifelse(df$Seasons=='Winter',1,0)
 df$is_spring <- ifelse(df$Seasons=='Spring',1,0)
 df$is_summer <- ifelse(df$Seasons=='Summer',1,0)
-
 
 df$is_snowfall <-ifelse(df$`Snowfall (cm)`==0,"No snowfall","Snowfall")
 
 # Converts the datatype of 'Rented Bike Count' column into numeric type
 df <-df %>%
   mutate(`Rented Bike Count` = as.numeric(`Rented Bike Count`))
-# Drops the Date, Holiday, and dayofweek columns 
+# Drops the Holiday, and dayofweek columns 
 df <- df %>%
   select(!c(Holiday,dayofweek))
 
@@ -126,7 +125,7 @@ ggplot(df_groupby_season,aes(x=Seasons,y= avgSeasonDemand
   theme_minimal() +
   ggtitle("Average Daily Bike Demand across Mulitple Seasons")
 
-# Displays a linechart where x is the hour and y is the average demand per hour, colored by a line represting the Seasons
+# Displays a linechart where x is the hour and y is the average demand per hour, colored by a line representing the Seasons
 ggplot(df_grouped_by_season_and_hour,aes(x=Hour,y=avgHourDemand
                                          ,color=Seasons)) +
   geom_line() +
@@ -200,4 +199,5 @@ Linear_Regression_prediction <- predict(Linear_regresion_model
                                       ,prediction_data)
 # Displays the predicted value
 Linear_Regression_prediction
+
 
