@@ -1,9 +1,5 @@
-getwd()
-
-install.packages("tidyverse")
-install.packages("psych")
-install.packages("corrplot")
-install.packages("car")
+install.packages(c("readr","lubridate","psych","dpylr","coorplot","ggplot2",
+                   "car"))
 
 library(readr)
 library(lubridate)
@@ -16,7 +12,7 @@ library(car)
 #--------------Data loading & Exploration--------------
 df <- read_csv("SeoulBikeData.csv",
                locale= locale(encoding = "Windows-1252"))
-dim(df)
+
 names(df)
 
 head(df)
@@ -45,6 +41,7 @@ df_groupby_functioning_day
 # Keeps rows where`Functioning Day' column is equal to 'Yes'
 df <- df %>%
   filter(`Functioning Day`=='Yes')
+dim(df)
 # Drops the `Dew point temperature(°C)` column and `Functioning Day` column 
 # from the dataframe
 df <- df %>%
@@ -112,7 +109,7 @@ df_inWinter <-df %>%
 
 # Displays a histogram based on 'Rented Bike Count' column
 hist(df$`Rented Bike Count`,main=paste("Histogram of",
-      "Rented Bike Count"),xlab='Number of rented bikes',col="lightblue")
+      "Rented Bikes"),xlab='Number of rented bikes',col="lightblue")
 
 # Displays a correlation matrix 
 corrplot(df_columns_for_corr)
@@ -138,7 +135,7 @@ ggplot(df_grouped_by_season_and_hour,aes(x=Hour,y=avgHourDemand
   labs(x = "Hour of the day", y = "Average demand") +
   ggtitle("Average Hourly Bike Demand across Mulitple Seasons")
 
-# Displays a scatterplot where x is tempertaure and y is the average bike demand
+# Displays a scatterplot where x is temperature and y is the average bike demand
 ggplot(df_grouped_by_season_and_temp,
        aes(x=`Temperature(°C)`,y=avgDemand,color=Seasons)) +
   geom_point() +
@@ -168,7 +165,7 @@ summary(df_aov)
 TukeyHSD(df_aov)
 
 # Test 2: T-test for 'is_snowfall'
-t.test(`Rented Bike Count`~is_snowfall,data=df)
+t.test(`Rented Bike Count`~is_snowfall,data=df_inWinter)
 # Test 3: T-test for 'is_holiday'
 t.test(`Rented Bike Count`~is_holiday,data=df)
 
