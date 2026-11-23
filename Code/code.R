@@ -1,5 +1,3 @@
-install.packages(c("readr","lubridate","psych","dpylr","coorplot","ggplot2",
-                   "car"))
 
 library(readr)
 library(lubridate)
