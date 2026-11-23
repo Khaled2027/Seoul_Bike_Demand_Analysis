@@ -1,4 +1,3 @@
-
 library(readr)
 library(lubridate)
 library(psych)
